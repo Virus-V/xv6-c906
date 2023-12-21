@@ -1,0 +1,8 @@
+boot.sd/boot.sd
+boot.sd/Image.lzma
+boot.sd/rootfs.cpio.gz
+
+fip/fip.bin
+
+images/boot.vfat
+images/milkv-duo.img
