@@ -11,9 +11,9 @@
   images {
     kernel-1 {
       description = "cvitek kernel";
-      data = /incbin/("./Image.lzma");
+      data = /incbin/("./kernel.bin.lzma");
       type = "kernel";
-      arch = "arm64";
+      arch = "riscv";
       os = "linux";
       compression = "lzma";
       load = <0x0 0x80080000>;
@@ -25,13 +25,12 @@
 
     ramdisk-1 {
       description = "cvitek ramdisk";
-      data = /incbin/("./rootfs.cpio.gz");
+      data = /incbin/("./fs.img");
       type = "ramdisk";
-      arch = "arm64";
+      arch = "riscv";
       os = "linux";
-      compression = "lzma";
-      load = <00000000>;
-      entry = <00000000>;
+      compression = "none";
+      load = <0x0 0x80280000>;
       hash-1 {
         algo = "crc32";
       };
@@ -42,7 +41,7 @@
       description = "cvitek device tree - cv1800b_milkv_duo_sd";
       data = /incbin/("./cv1800b_milkv_duo_sd.dtb");
       type = "flat_dt";
-      arch = "arm64";
+      arch = "riscv";
       compression = "none";
       hash-1 {
         algo = "sha256";
@@ -55,6 +54,7 @@
     config-cv1800b_milkv_duo_sd {
       description = "boot cvitek system with board cv1800b_milkv_duo_sd";
       kernel = "kernel-1";
+      ramdisk = "ramdisk-1";
       fdt = "fdt-cv1800b_milkv_duo_sd";
     };
   };

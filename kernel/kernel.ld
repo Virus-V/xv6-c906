@@ -7,7 +7,7 @@ SECTIONS
    * ensure that entry.S / _entry is at 0x80000000,
    * where qemu's -kernel jumps.
    */
-  . = 0x80000000;
+  . = 0x80080000;
 
   .text : {
     *(.text .text.*)
@@ -34,10 +34,12 @@ SECTIONS
   }
 
   .bss : {
+    PROVIDE( __bss_start = . );
     . = ALIGN(16);
     *(.sbss .sbss.*) /* do not need to distinguish this from .bss */
     . = ALIGN(16);
     *(.bss .bss.*)
+    PROVIDE( __bss_end = . );
   }
 
   PROVIDE(end = .);

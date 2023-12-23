@@ -12,34 +12,37 @@
 #include "fs.h"
 #include "buf.h"
 
+static struct spinlock ramdisk_lock;
 void
-ramdiskinit(void)
+ramdisk_init(void)
 {
+  initlock(&ramdisk_lock, "ramdisk");
 }
 
 // If B_DIRTY is set, write buf to disk, clear B_DIRTY, set B_VALID.
 // Else if B_VALID is not set, read buf from disk, set B_VALID.
 void
-ramdiskrw(struct buf *b)
+ramdisk_rw(struct buf *b, int write)
 {
-  if(!holdingsleep(&b->lock))
-    panic("ramdiskrw: buf not locked");
-  if((b->flags & (B_VALID|B_DIRTY)) == B_VALID)
-    panic("ramdiskrw: nothing to do");
+  acquire(&ramdisk_lock);
 
   if(b->blockno >= FSSIZE)
     panic("ramdiskrw: blockno too big");
 
+  /* we hold the buffer */
+  b->disk = 1;
+
   uint64 diskaddr = b->blockno * BSIZE;
   char *addr = (char *)RAMDISK + diskaddr;
 
-  if(b->flags & B_DIRTY){
+  if(write){
     // write
     memmove(addr, b->data, BSIZE);
-    b->flags &= ~B_DIRTY;
   } else {
     // read
     memmove(b->data, addr, BSIZE);
-    b->flags |= B_VALID;
   }
+
+  b->disk = 0;   // disk is done with buf
+  release(&ramdisk_lock);
 }

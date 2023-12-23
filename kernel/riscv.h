@@ -1,10 +1,13 @@
 #ifndef __ASSEMBLER__
 
+#include "stdint.h"
+#include "sbi.h"
+
 // which hart (core) is this?
-static inline uint64
+static inline uint64_t
 r_mhartid()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, mhartid" : "=r" (x) );
   return x;
 }
@@ -17,16 +20,16 @@ r_mhartid()
 #define MSTATUS_MPP_U (0L << 11)
 #define MSTATUS_MIE (1L << 3)    // machine-mode interrupt enable.
 
-static inline uint64
+static inline uint64_t
 r_mstatus()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, mstatus" : "=r" (x) );
   return x;
 }
 
-static inline void 
-w_mstatus(uint64 x)
+static inline void
+w_mstatus(uint64_t x)
 {
   asm volatile("csrw mstatus, %0" : : "r" (x));
 }
@@ -34,8 +37,8 @@ w_mstatus(uint64 x)
 // machine exception program counter, holds the
 // instruction address to which a return from
 // exception will go.
-static inline void 
-w_mepc(uint64 x)
+static inline void
+w_mepc(uint64_t x)
 {
   asm volatile("csrw mepc, %0" : : "r" (x));
 }
@@ -48,31 +51,31 @@ w_mepc(uint64 x)
 #define SSTATUS_SIE (1L << 1)  // Supervisor Interrupt Enable
 #define SSTATUS_UIE (1L << 0)  // User Interrupt Enable
 
-static inline uint64
+static inline uint64_t
 r_sstatus()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, sstatus" : "=r" (x) );
   return x;
 }
 
-static inline void 
-w_sstatus(uint64 x)
+static inline void
+w_sstatus(uint64_t x)
 {
   asm volatile("csrw sstatus, %0" : : "r" (x));
 }
 
 // Supervisor Interrupt Pending
-static inline uint64
+static inline uint64_t
 r_sip()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, sip" : "=r" (x) );
   return x;
 }
 
-static inline void 
-w_sip(uint64 x)
+static inline void
+w_sip(uint64_t x)
 {
   asm volatile("csrw sip, %0" : : "r" (x));
 }
@@ -81,16 +84,16 @@ w_sip(uint64 x)
 #define SIE_SEIE (1L << 9) // external
 #define SIE_STIE (1L << 5) // timer
 #define SIE_SSIE (1L << 1) // software
-static inline uint64
+static inline uint64_t
 r_sie()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, sie" : "=r" (x) );
   return x;
 }
 
-static inline void 
-w_sie(uint64 x)
+static inline void
+w_sie(uint64_t x)
 {
   asm volatile("csrw sie, %0" : : "r" (x));
 }
@@ -99,16 +102,16 @@ w_sie(uint64 x)
 #define MIE_MEIE (1L << 11) // external
 #define MIE_MTIE (1L << 7)  // timer
 #define MIE_MSIE (1L << 3)  // software
-static inline uint64
+static inline uint64_t
 r_mie()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, mie" : "=r" (x) );
   return x;
 }
 
-static inline void 
-w_mie(uint64 x)
+static inline void
+w_mie(uint64_t x)
 {
   asm volatile("csrw mie, %0" : : "r" (x));
 }
@@ -116,151 +119,152 @@ w_mie(uint64 x)
 // supervisor exception program counter, holds the
 // instruction address to which a return from
 // exception will go.
-static inline void 
-w_sepc(uint64 x)
+static inline void
+w_sepc(uint64_t x)
 {
   asm volatile("csrw sepc, %0" : : "r" (x));
 }
 
-static inline uint64
+static inline uint64_t
 r_sepc()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, sepc" : "=r" (x) );
   return x;
 }
 
 // Machine Exception Delegation
-static inline uint64
+static inline uint64_t
 r_medeleg()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, medeleg" : "=r" (x) );
   return x;
 }
 
-static inline void 
-w_medeleg(uint64 x)
+static inline void
+w_medeleg(uint64_t x)
 {
   asm volatile("csrw medeleg, %0" : : "r" (x));
 }
 
 // Machine Interrupt Delegation
-static inline uint64
+static inline uint64_t
 r_mideleg()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, mideleg" : "=r" (x) );
   return x;
 }
 
-static inline void 
-w_mideleg(uint64 x)
+static inline void
+w_mideleg(uint64_t x)
 {
   asm volatile("csrw mideleg, %0" : : "r" (x));
 }
 
 // Supervisor Trap-Vector Base Address
 // low two bits are mode.
-static inline void 
-w_stvec(uint64 x)
+static inline void
+w_stvec(uint64_t x)
 {
   asm volatile("csrw stvec, %0" : : "r" (x));
 }
 
-static inline uint64
+static inline uint64_t
 r_stvec()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, stvec" : "=r" (x) );
   return x;
 }
 
 // Machine-mode interrupt vector
-static inline void 
-w_mtvec(uint64 x)
+static inline void
+w_mtvec(uint64_t x)
 {
   asm volatile("csrw mtvec, %0" : : "r" (x));
 }
 
 // Physical Memory Protection
 static inline void
-w_pmpcfg0(uint64 x)
+w_pmpcfg0(uint64_t x)
 {
   asm volatile("csrw pmpcfg0, %0" : : "r" (x));
 }
 
 static inline void
-w_pmpaddr0(uint64 x)
+w_pmpaddr0(uint64_t x)
 {
   asm volatile("csrw pmpaddr0, %0" : : "r" (x));
 }
 
-// use riscv's sv39 page table scheme.
-#define SATP_SV39 (8L << 60)
-
-#define MAKE_SATP(pagetable) (SATP_SV39 | (((uint64)pagetable) >> 12))
-
 // supervisor address translation and protection;
 // holds the address of the page table.
-static inline void 
-w_satp(uint64 x)
+static inline void
+w_satp(uint64_t x)
 {
   asm volatile("csrw satp, %0" : : "r" (x));
 }
 
-static inline uint64
+static inline uint64_t
 r_satp()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, satp" : "=r" (x) );
   return x;
 }
 
-static inline void 
-w_mscratch(uint64 x)
+static inline void
+w_mscratch(uint64_t x)
 {
   asm volatile("csrw mscratch, %0" : : "r" (x));
 }
 
+static inline void
+w_sscratch(uint64_t x)
+{
+  asm volatile("csrw sscratch, %0" : : "r" (x));
+}
+
 // Supervisor Trap Cause
-static inline uint64
+static inline uint64_t
 r_scause()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, scause" : "=r" (x) );
   return x;
 }
 
 // Supervisor Trap Value
-static inline uint64
+static inline uint64_t
 r_stval()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, stval" : "=r" (x) );
   return x;
 }
 
 // Machine-mode Counter-Enable
-static inline void 
-w_mcounteren(uint64 x)
+static inline void
+w_mcounteren(uint64_t x)
 {
   asm volatile("csrw mcounteren, %0" : : "r" (x));
 }
 
-static inline uint64
+static inline uint64_t
 r_mcounteren()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, mcounteren" : "=r" (x) );
   return x;
 }
 
 // machine-mode cycle counter
-static inline uint64
+static inline uint64_t
 r_time()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("csrr %0, time" : "=r" (x) );
   return x;
 }
@@ -283,38 +287,38 @@ intr_off()
 static inline int
 intr_get()
 {
-  uint64 x = r_sstatus();
+  uint64_t x = r_sstatus();
   return (x & SSTATUS_SIE) != 0;
 }
 
-static inline uint64
+static inline uint64_t
 r_sp()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("mv %0, sp" : "=r" (x) );
   return x;
 }
 
 // read and write tp, the thread pointer, which xv6 uses to hold
 // this core's hartid (core number), the index into cpus[].
-static inline uint64
+static inline uint64_t
 r_tp()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("mv %0, tp" : "=r" (x) );
   return x;
 }
 
-static inline void 
-w_tp(uint64 x)
+static inline void
+w_tp(uint64_t x)
 {
   asm volatile("mv tp, %0" : : "r" (x));
 }
 
-static inline uint64
+static inline uint64_t
 r_ra()
 {
-  uint64 x;
+  uint64_t x;
   asm volatile("mv %0, ra" : "=r" (x) );
   return x;
 }
@@ -327,13 +331,18 @@ sfence_vma()
   asm volatile("sfence.vma zero, zero");
 }
 
-typedef uint64 pte_t;
-typedef uint64 *pagetable_t; // 512 PTEs
+typedef uint64_t pte_t;
+typedef uint64_t *pagetable_t; // 512 PTEs
 
 #endif // __ASSEMBLER__
 
 #define PGSIZE 4096 // bytes per page
 #define PGSHIFT 12  // bits of offset within a page
+
+// use riscv's sv39 page table scheme.
+#define SATP_SV39 (8L << 60)
+
+#define MAKE_SATP(pagetable) (SATP_SV39 | (((uint64_t)pagetable) >> PGSHIFT))
 
 #define PGROUNDUP(sz)  (((sz)+PGSIZE-1) & ~(PGSIZE-1))
 #define PGROUNDDOWN(a) (((a)) & ~(PGSIZE-1))
@@ -343,21 +352,88 @@ typedef uint64 *pagetable_t; // 512 PTEs
 #define PTE_W (1L << 2)
 #define PTE_X (1L << 3)
 #define PTE_U (1L << 4) // user can access
+#define PTE_A (1L << 6)
+#define PTE_D (1L << 7)
+
+/* T-Head extended attribute */
+#define PTE_SEC (0x1L << 59)
+#define PTE_B   (0x1L << 61)
+#define PTE_C   (0x1L << 62)
+#define PTE_SO  (0x1L << 63)
+
+/* Physical Memory Attribute */
+#if 1
+#define PMA_DEVICE  (PTE_SO)
+#define PMA_MEMORY  (PTE_B | PTE_C)
+#else
+#define PMA_DEVICE  (0)
+#define PMA_MEMORY  (0)
+#endif
 
 // shift a physical address to the right place for a PTE.
-#define PA2PTE(pa) ((((uint64)pa) >> 12) << 10)
+#define PA2PTE(pa) ((((uint64_t)pa) >> PGSHIFT) << 10)
 
-#define PTE2PA(pte) (((pte) >> 10) << 12)
+#define PTE2PA(pte) (((pte) >> 10) << PGSHIFT)
 
 #define PTE_FLAGS(pte) ((pte) & 0x3FF)
 
 // extract the three 9-bit page table indices from a virtual address.
 #define PXMASK          0x1FF // 9 bits
 #define PXSHIFT(level)  (PGSHIFT+(9*(level)))
-#define PX(level, va) ((((uint64) (va)) >> PXSHIFT(level)) & PXMASK)
+#define PX(level, va) ((((uint64_t) (va)) >> PXSHIFT(level)) & PXMASK)
 
 // one beyond the highest possible virtual address.
 // MAXVA is actually one bit less than the max allowed by
 // Sv39, to avoid having to sign-extend virtual addresses
 // that have the high bit set.
 #define MAXVA (1L << (9 + 9 + 9 + 12 - 1))
+
+#ifndef __ASSEMBLER__
+/* milkv-duo */
+static inline void mmio_write_32(uintptr_t addr, uint32_t value)
+{
+	*(volatile uint32_t*)addr = value;
+}
+
+static inline uint32_t mmio_read_32(uintptr_t addr)
+{
+	return *(volatile uint32_t*)addr;
+}
+
+static inline void mmio_clrsetbits_32(uintptr_t addr,
+				uint32_t clear,
+				uint32_t set)
+{
+	mmio_write_32(addr, (mmio_read_32(addr) & ~clear) | set);
+}
+
+/**/
+#define  FMUX_GPIO_FUNCSEL_UART0_TX   0x24
+#define  FMUX_GPIO_FUNCSEL_UART0_TX_OFFSET 0
+#define  FMUX_GPIO_FUNCSEL_UART0_TX_MASK   0x7
+#define  FMUX_GPIO_FUNCSEL_UART0_RX   0x28
+#define  FMUX_GPIO_FUNCSEL_UART0_RX_OFFSET 0
+#define  FMUX_GPIO_FUNCSEL_UART0_RX_MASK   0x7
+
+#define  FMUX_GPIO_FUNCSEL_IIC0_SCL   0x4c
+#define  FMUX_GPIO_FUNCSEL_IIC0_SCL_OFFSET 0
+#define  FMUX_GPIO_FUNCSEL_IIC0_SCL_MASK   0x7
+#define  FMUX_GPIO_FUNCSEL_IIC0_SDA   0x50
+#define  FMUX_GPIO_FUNCSEL_IIC0_SDA_OFFSET 0
+#define  FMUX_GPIO_FUNCSEL_IIC0_SDA_MASK   0x7
+
+#define UART0_TX__JTAG_TMS 6
+#define UART0_RX__JTAG_TCK 6
+#define IIC0_SCL__JTAG_TDI 0
+#define IIC0_SDA__JTAG_TDO 0
+
+#define PINMUX_BASE 0x03001000
+#define PINMUX_MASK(PIN_NAME) FMUX_GPIO_FUNCSEL_##PIN_NAME##_MASK
+#define PINMUX_OFFSET(PIN_NAME) FMUX_GPIO_FUNCSEL_##PIN_NAME##_OFFSET
+#define PINMUX_VALUE(PIN_NAME, FUNC_NAME) PIN_NAME##__##FUNC_NAME
+#define PINMUX_CONFIG(PIN_NAME, FUNC_NAME) \
+        mmio_clrsetbits_32(PINMUX_BASE + FMUX_GPIO_FUNCSEL_##PIN_NAME, \
+            FMUX_GPIO_FUNCSEL_##PIN_NAME##_MASK << FMUX_GPIO_FUNCSEL_##PIN_NAME##_OFFSET, \
+            PIN_NAME##__##FUNC_NAME)
+
+#endif

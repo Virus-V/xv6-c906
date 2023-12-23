@@ -96,7 +96,11 @@ bread(uint dev, uint blockno)
 
   b = bget(dev, blockno);
   if(!b->valid) {
+#if 0
     virtio_disk_rw(b, 0);
+#else
+    ramdisk_rw(b, 0);
+#endif
     b->valid = 1;
   }
   return b;
@@ -108,7 +112,11 @@ bwrite(struct buf *b)
 {
   if(!holdingsleep(&b->lock))
     panic("bwrite");
+#if 0
   virtio_disk_rw(b, 1);
+#else
+  ramdisk_rw(b, 1);
+#endif
 }
 
 // Release a locked buffer.
@@ -132,7 +140,7 @@ brelse(struct buf *b)
     bcache.head.next->prev = b;
     bcache.head.next = b;
   }
-  
+
   release(&bcache.lock);
 }
 
@@ -149,5 +157,3 @@ bunpin(struct buf *b) {
   b->refcnt--;
   release(&bcache.lock);
 }
-
-

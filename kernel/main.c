@@ -10,6 +10,21 @@ volatile static int started = 0;
 void
 main()
 {
+#if 0
+  sbi_console_putchar('a');
+  sbi_console_putchar('a');
+  sbi_console_putchar('a');
+  sbi_console_putchar('a');
+#endif
+
+#if 1
+  /* enable jtag */
+  PINMUX_CONFIG(UART0_TX, JTAG_TMS);
+  PINMUX_CONFIG(UART0_RX, JTAG_TCK);
+  PINMUX_CONFIG(IIC0_SCL, JTAG_TDI);
+  PINMUX_CONFIG(IIC0_SDA, JTAG_TDO);
+#endif
+
   if(cpuid() == 0){
     consoleinit();
     printfinit();
@@ -27,7 +42,13 @@ main()
     binit();         // buffer cache
     iinit();         // inode table
     fileinit();      // file table
+                     //
+#if 0
     virtio_disk_init(); // emulated hard disk
+#else
+    ramdisk_init(); // fs.img in ram
+#endif
+
     userinit();      // first user process
     __sync_synchronize();
     started = 1;
@@ -41,5 +62,5 @@ main()
     plicinithart();   // ask PLIC for device interrupts
   }
 
-  scheduler();        
+  scheduler();
 }
