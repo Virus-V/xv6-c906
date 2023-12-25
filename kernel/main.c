@@ -6,6 +6,8 @@
 
 volatile static int started = 0;
 
+volatile int __stop = 0;
+
 // start() jumps here in supervisor mode on all CPUs.
 void
 main()
@@ -17,12 +19,15 @@ main()
   sbi_console_putchar('a');
 #endif
 
-#if 1
+#if 0
   /* enable jtag */
   PINMUX_CONFIG(UART0_TX, JTAG_TMS);
   PINMUX_CONFIG(UART0_RX, JTAG_TCK);
   PINMUX_CONFIG(IIC0_SCL, JTAG_TDI);
   PINMUX_CONFIG(IIC0_SDA, JTAG_TDO);
+  __stop = 1;
+  /* waiting debugger */
+  while(__stop);
 #endif
 
   if(cpuid() == 0){

@@ -373,9 +373,9 @@ typedef uint64_t *pagetable_t; // 512 PTEs
 // shift a physical address to the right place for a PTE.
 #define PA2PTE(pa) ((((uint64_t)pa) >> PGSHIFT) << 10)
 
-#define PTE2PA(pte) (((pte) >> 10) << PGSHIFT)
+#define PTE2PA(pte) ((((pte) >> 10) & ((0x1L << 28) - 1)) << PGSHIFT)
 
-#define PTE_FLAGS(pte) ((pte) & 0x3FF)
+#define PTE_FLAGS(pte) ((pte) & (0x3FF | (0x1DUL << 58)))
 
 // extract the three 9-bit page table indices from a virtual address.
 #define PXMASK          0x1FF // 9 bits
@@ -437,3 +437,5 @@ static inline void mmio_clrsetbits_32(uintptr_t addr,
             PIN_NAME##__##FUNC_NAME)
 
 #endif
+
+#define MTIMER_FREQ 25000000

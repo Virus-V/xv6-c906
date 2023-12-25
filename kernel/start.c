@@ -6,6 +6,8 @@
 #include "sbi.h"
 
 void main();
+void timerinit();
+
 // entry.S needs one stack per CPU.
 __attribute__ ((aligned (16))) char stack0[4096 * NCPU];
 
@@ -15,41 +17,10 @@ __attribute__ ((aligned (16))) char stack0[4096 * NCPU];
 // assembly code in kernelvec.S for machine-mode timer interrupt.
 extern void timervec();
 
-void
-sbi_init(void)
-{
-}
-
-static void exception_puts(const char *str) {
-  int i;
-  for (i = 0; str[i] != 0; i++) {
-    if(str[i] == '\n') {
-      sbi_console_putchar('\r');
-    }
-    sbi_console_putchar(str[i]);
-  }
-}
-
-void __attribute__ ((aligned(4)))
-trap_pre_sched()
-{
-#if 0
-  uint64 cause, tval, epc;
-
-  cause = r_scause();
-  tval = r_stval();
-  epc = r_sepc();
-#endif
-
-  exception_puts("exception!!!\n");
-  while(1);
-}
-
 // entry.S jumps here in machine mode on stack0.
 void
 start()
 {
-#if 0
   // set M Previous Privilege mode to Supervisor, for mret.
   unsigned long x = r_sstatus();
   x |= SSTATUS_SPP;
@@ -59,14 +30,13 @@ start()
   // requires gcc -mcmodel=medany
   w_sepc((uint64)main);
 
+  // ask for clock interrupts.
+  timerinit();
+
   // disable paging for now.
   w_satp(0);
 
   w_sie(r_sie() | SIE_SEIE | SIE_STIE | SIE_SSIE);
-
-  // ask for clock interrupts.
-  //timerinit();
-  // call opensbi
 
   // keep each CPU's hartid in its tp register, for cpuid().
   //int id = r_mhartid();
@@ -75,10 +45,20 @@ start()
 
   // switch to supervisor mode and jump to main().
   asm volatile("sret");
-#endif
-  w_stvec((uint64)trap_pre_sched);
-  w_satp(0);
-  w_tp(0);
-  main();
-  while(1);
+}
+
+
+// arrange to receive timer interrupts.
+// they will arrive in machine mode at
+// at timervec in kernelvec.S,
+// which turns them into software interrupts for
+// devintr() in trap.c.
+void
+timerinit()
+{
+  struct sbi_ret ret;
+
+  ret = SBI_CALL1(SBI_EXT_ID_TIME, SBI_TIME_SET_TIMER, r_time() + (MTIMER_FREQ / TICKRATE));
+  if (ret.error != SBI_SUCCESS)
+    panic("ticks");
 }

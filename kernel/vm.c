@@ -66,16 +66,14 @@ kvminit(void)
 void
 kvminithart()
 {
-  asm volatile("fence");
-  asm volatile("DCACHE.CIALL");
-  asm volatile("fence");
-  asm volatile("ICACHE.IALL");
-  asm volatile("fence");
-
   sfence_vma();
   w_satp(MAKE_SATP(kernel_pagetable));
   // flush stale entries from the TLB.
   sfence_vma();
+
+  asm volatile("DCACHE.CIALL");
+  asm volatile("ICACHE.IALL");
+  asm volatile("fence");
 }
 
 // Return the address of the PTE in page table pagetable
@@ -224,7 +222,7 @@ uvmfirst(pagetable_t pagetable, uchar *src, uint sz)
     panic("uvmfirst: more than a page");
   mem = kalloc();
   memset(mem, 0, PGSIZE);
-  mappages(pagetable, 0, PGSIZE, (uint64)mem, PTE_W|PTE_R|PTE_X|PTE_U);
+  mappages(pagetable, 0, PGSIZE, (uint64)mem, PTE_W|PTE_R|PTE_X|PTE_U|PMA_MEMORY);
   memmove(mem, src, sz);
 }
 
@@ -247,7 +245,7 @@ uvmalloc(pagetable_t pagetable, uint64 oldsz, uint64 newsz, int xperm)
       return 0;
     }
     memset(mem, 0, PGSIZE);
-    if(mappages(pagetable, a, PGSIZE, (uint64)mem, PTE_R|PTE_U|xperm) != 0){
+    if(mappages(pagetable, a, PGSIZE, (uint64)mem, PTE_R|PTE_U|xperm|PMA_MEMORY) != 0){
       kfree(mem);
       uvmdealloc(pagetable, a, oldsz);
       return 0;
