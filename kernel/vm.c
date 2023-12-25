@@ -25,7 +25,7 @@ kvmmake(void)
   memset(kpgtbl, 0, PGSIZE);
 
   // uart registers
-  //kvmmap(kpgtbl, UART0, UART0, PGSIZE, PTE_R | PTE_W | PMA_DEVICE);
+  kvmmap(kpgtbl, UART0, UART0, PGSIZE, PTE_R | PTE_W | PMA_DEVICE);
 
 #if 0
   // virtio mmio disk interface

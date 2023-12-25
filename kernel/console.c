@@ -36,16 +36,13 @@ consputc(int c)
 {
   if(c == BACKSPACE){
     // if the user typed backspace, overwrite with a space.
-    //uartputc_sync('\b'); uartputc_sync(' '); uartputc_sync('\b');
-    //sbi_console_putchar('\b');
-    //sbi_console_putchar(' ');
-    //sbi_console_putchar('\b');
     uart8250_putc('\b');
     uart8250_putc(' ');
     uart8250_putc('\b');
+  } else if (c == '\n'){
+    uart8250_putc('\r');
+    uart8250_putc(c);
   } else {
-    //sbi_console_putchar(c);
-    //uartputc_sync(c);
     uart8250_putc(c);
   }
 }
@@ -73,8 +70,8 @@ consolewrite(int user_src, uint64 src, int n)
     char c;
     if(either_copyin(&c, user_src, src+i, 1) == -1)
       break;
-    //uartputc(c);
-    //sbi_console_putchar(c);
+    if (c == '\n')
+      uart8250_putc('\r');
     uart8250_putc(c);
   }
 
@@ -195,7 +192,7 @@ consoleinit(void)
   initlock(&cons.lock, "cons");
 
   //uartinit();
-  uart8250_init(0x04140000, 25000000, 115200, 2, 4);
+  uart8250_init(UART0, 25000000, 115200, 2, 4);
 
   // connect read and write system calls
   // to consoleread and consolewrite.
