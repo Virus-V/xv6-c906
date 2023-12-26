@@ -21,7 +21,6 @@
 #include "riscv.h"
 #include "defs.h"
 #include "proc.h"
-#include "uart8250.h"
 
 #define BACKSPACE 0x100
 #define C(x)  ((x)-'@')  // Control-x
@@ -36,14 +35,12 @@ consputc(int c)
 {
   if(c == BACKSPACE){
     // if the user typed backspace, overwrite with a space.
-    uart8250_putc('\b');
-    uart8250_putc(' ');
-    uart8250_putc('\b');
+    uartputc_sync('\b'); uartputc_sync(' '); uartputc_sync('\b');
   } else if (c == '\n'){
-    uart8250_putc('\r');
-    uart8250_putc(c);
+    uartputc_sync('\r');
+    uartputc_sync(c);
   } else {
-    uart8250_putc(c);
+    uartputc_sync(c);
   }
 }
 
@@ -71,8 +68,8 @@ consolewrite(int user_src, uint64 src, int n)
     if(either_copyin(&c, user_src, src+i, 1) == -1)
       break;
     if (c == '\n')
-      uart8250_putc('\r');
-    uart8250_putc(c);
+      uartputc('\r');
+    uartputc(c);
   }
 
   return i;
@@ -191,8 +188,7 @@ consoleinit(void)
 {
   initlock(&cons.lock, "cons");
 
-  //uartinit();
-  uart8250_init(UART0, 25000000, 115200, 2, 4);
+  uartinit();
 
   // connect read and write system calls
   // to consoleread and consolewrite.
