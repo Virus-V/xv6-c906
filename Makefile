@@ -6,7 +6,7 @@ OBJS = \
   $K/start.o \
   $K/console.o \
   $K/printf.o \
-  $K/uart8250.o\
+  $K/uart8250.o \
   $K/kalloc.o \
   $K/spinlock.o \
   $K/string.o \
@@ -28,6 +28,7 @@ OBJS = \
   $K/sysfile.o \
   $K/kernelvec.o \
   $K/plic.o \
+  $K/device.o \
   $K/virtio_disk.o \
   $K/ramdisk.o
 
@@ -134,6 +135,7 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
+	$U/_gpiotest\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

@@ -38,3 +38,10 @@ struct devsw {
 extern struct devsw devsw[];
 
 #define CONSOLE 1
+
+#define GPIO    2
+#define I2C     3
+#define SPI     4
+#define ADC     5
+#define PWM     6
+#define UART1   7

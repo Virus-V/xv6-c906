@@ -48,7 +48,7 @@ main()
     binit();         // buffer cache
     iinit();         // inode table
     fileinit();      // file table
-                     //
+    devinit();       // device init
 #if 0
     virtio_disk_init(); // emulated hard disk
 #else

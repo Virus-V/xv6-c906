@@ -185,5 +185,9 @@ void            ramdisk_init(void);
 void            ramdisk_intr(void);
 void            ramdisk_rw(struct buf*, int);
 
+// devices
+void            devinit(void);
+int             devintr(void);
+
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
