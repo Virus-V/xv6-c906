@@ -390,22 +390,94 @@ typedef uint64_t *pagetable_t; // 512 PTEs
 
 #ifndef __ASSEMBLER__
 /* milkv-duo */
-static inline void mmio_write_32(uintptr_t addr, uint32_t value)
+static inline void mmio_write_32(uintptr_t addr, uint32_t  value)
 {
-	*(volatile uint32_t*)addr = value;
+	*(volatile uint32_t *)addr = value;
 }
 
-static inline uint32_t mmio_read_32(uintptr_t addr)
+static inline uint32_t  mmio_read_32(uintptr_t addr)
 {
-	return *(volatile uint32_t*)addr;
+	return *(volatile uint32_t *)addr;
 }
 
 static inline void mmio_clrsetbits_32(uintptr_t addr,
-				uint32_t clear,
-				uint32_t set)
+				uint32_t  clear,
+				uint32_t  set)
 {
 	mmio_write_32(addr, (mmio_read_32(addr) & ~clear) | set);
 }
+
+/* clang-format off */
+
+static inline void __raw_writeb(uint8_t val, volatile void *addr)
+{
+  asm volatile("sb %0, 0(%1)" : : "r"(val), "r"(addr));
+}
+
+static inline void __raw_writew(uint16_t val, volatile void *addr)
+{
+  asm volatile("sh %0, 0(%1)" : : "r"(val), "r"(addr));
+}
+
+static inline void __raw_writel(uint32_t val, volatile void *addr)
+{
+  asm volatile("sw %0, 0(%1)" : : "r"(val), "r"(addr));
+}
+
+#if __riscv_xlen != 32
+static inline void __raw_writeq(uint64_t val, volatile void *addr)
+{
+  asm volatile("sd %0, 0(%1)" : : "r"(val), "r"(addr));
+}
+#endif
+
+static inline uint8_t __raw_readb(const volatile void *addr)
+{
+  uint8_t val;
+
+  asm volatile("lb %0, 0(%1)" : "=r"(val) : "r"(addr));
+  return val;
+}
+
+static inline uint16_t __raw_readw(const volatile void *addr)
+{
+  uint16_t val;
+
+  asm volatile("lh %0, 0(%1)" : "=r"(val) : "r"(addr));
+  return val;
+}
+
+static inline uint32_t __raw_readl(const volatile void *addr)
+{
+  uint32_t val;
+
+  asm volatile("lw %0, 0(%1)" : "=r"(val) : "r"(addr));
+  return val;
+}
+
+#if __riscv_xlen != 32
+static inline uint64_t __raw_readq(const volatile void *addr)
+{
+  uint64_t val;
+
+  asm volatile("ld %0, 0(%1)" : "=r"(val) : "r"(addr));
+  return val;
+}
+#endif
+
+#define __io_br() do {} while (0)
+#define __io_ar() __asm__ __volatile__ ("fence i,r" : : : "memory");
+#define __io_bw() __asm__ __volatile__ ("fence w,o" : : : "memory");
+#define __io_aw() do {} while (0)
+
+#define readb(c)  ({ uint8_t  __v; __io_br(); __v = __raw_readb(c); __io_ar(); __v; })
+#define readw(c)  ({ uint16_t __v; __io_br(); __v = __raw_readw(c); __io_ar(); __v; })
+#define readl(c)  ({ uint32_t __v; __io_br(); __v = __raw_readl(c); __io_ar(); __v; })
+
+#define writeb(v,c) ({ __io_bw(); __raw_writeb((v),(c)); __io_aw(); })
+#define writew(v,c) ({ __io_bw(); __raw_writew((v),(c)); __io_aw(); })
+#define writel(v,c) ({ __io_bw(); __raw_writel((v),(c)); __io_aw(); })
+/* clang-format on */
 
 /**/
 #define  FMUX_GPIO_FUNCSEL_UART0_TX   0x24
