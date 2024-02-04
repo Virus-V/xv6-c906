@@ -2,6 +2,7 @@
 #include "param.h"
 #include "memlayout.h"
 #include "riscv.h"
+#include "intr_conf.h"
 
 #include "fs.h"
 #include "spinlock.h"
@@ -115,3 +116,16 @@ devintr()
     return 0;
   }
 }
+
+int request_irq(int irqn, irq_handler_t handler,
+		       unsigned long flags, const char *name, void *priv)
+{
+    // TODO
+    //printf("irqn %d flags :lx\n",irqn,flags);
+    // csi_irq_attach2(irqn, handler, &g_irq_dev_table[irqn], priv);
+    //csi_plic_set_prio(PLIC_BASE, dev.irq_num, 31); //temp
+    // csi_irq_enable(irqn);
+
+    return 0;
+}
+
