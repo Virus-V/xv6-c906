@@ -15,3 +15,9 @@ mkfs
 kernel/kernel
 user/usys.S
 .gdbinit
+
+kernel.bin
+kernel.map
+vendor/milkv-duo/boot.sd/boot.sd
+vendor/milkv-duo/boot.sd/*.lzma
+compile_commands.json

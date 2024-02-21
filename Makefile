@@ -168,7 +168,7 @@ QEMUOPTS += -drive file=fs.img,if=none,format=raw,id=x0
 QEMUOPTS += -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
 
 qemu: $K/kernel fs.img
-	#$(QEMU) $(QEMUOPTS)
+	$(QEMU) $(QEMUOPTS)
 
 .gdbinit: .gdbinit.tmpl-riscv
 	sed "s/:1234/:$(GDBPORT)/" < $^ > $@
@@ -176,3 +176,10 @@ qemu: $K/kernel fs.img
 qemu-gdb: $K/kernel .gdbinit fs.img
 	@echo "*** Now run 'gdb' in another window." 1>&2
 	$(QEMU) $(QEMUOPTS) -S $(QEMUGDB)
+
+duo: $K/kernel fs.img
+	cp $K/kernel.bin vendor/milkv-duo/boot.sd/kernel.bin
+	cp fs.img vendor/milkv-duo/boot.sd/fs.img
+	cd vendor/milkv-duo/fip && ./gen_fip.sh
+	cd vendor/milkv-duo/boot.sd && ./gen_bootsd.sh
+	cd vendor/milkv-duo/images && ./gen_images.sh
