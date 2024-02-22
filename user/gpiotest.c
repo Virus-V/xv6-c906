@@ -28,13 +28,21 @@ main(void)
 
   printf("gpio open success! fd:%d\n", gpio_fd);
 
-  uint32 value;
+  uint8_t value;
+  int i;
 
-  read(gpio_fd, &value, sizeof(value));
-  printf("read value: %x\n", value);
+  for (i = 0; i < 300; i++) {
+    value = 1;
+    write(gpio_fd, &value, sizeof(value));
+    sleep(250);
+    value = 0;
+    write(gpio_fd, &value, sizeof(value));
+    sleep(250);
+  }
 
-  value ++;
-  write(gpio_fd, &value, sizeof(value));
+  close(gpio_fd);
+
+  printf("gpio test done!\n");
 
   exit(0);
 }

@@ -9,6 +9,7 @@ OBJS = \
   $K/uart8250.o \
   $K/hal_dw_i2c.o \
   $K/i2c.o \
+  $K/gpio.o \
   $K/kalloc.o \
   $K/spinlock.o \
   $K/string.o \

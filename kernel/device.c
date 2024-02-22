@@ -13,41 +13,10 @@
 
 struct spinlock devlock;
 
-static int
-gpioread(int user_dst, uint64 dst, int n)
-{
-  uint32 value;
-
-  acquire(&devlock);
-
-  /* TODO: read balabala.. */
-  value = 0xdeadbeef;
-
-  if(either_copyout(user_dst, dst, &value, 4) == -1) {
-    release(&devlock);
-    return -1;
-  }
-
-  release(&devlock);
-  return 4;
-}
-
-static int
-gpiowrite(int user_src, uint64 src, int n)
-{
-  uint32 value;
-  acquire(&devlock);
-  if(either_copyin(&value, user_src, src, 4) == -1) {
-    release(&devlock);
-    return -1;
-  }
-
-  /* TODO: write balabala... */
-  printf("gpio write: %p\n", value);
-
-  release(&devlock);
-  return 4;
-}
+/* device func */
+int gpioinit(void);
+int gpioread(int user_dst, uint64 dst, int n);
+int gpiowrite(int user_src, uint64 src, int n);
 
 void
 clockintr()
@@ -64,8 +33,17 @@ devinit()
   initlock(&devlock, "dev");
 
   /* gpio init */
-  devsw[GPIO].read = gpioread;
-  devsw[GPIO].write = gpiowrite;
+  if (gpioinit() == 0) {
+    devsw[GPIO].read = gpioread;
+    devsw[GPIO].write = gpiowrite;
+  }
+
+  /* i2c init */
+  /* adc init */
+
+  /* pwm init */
+  /* spi init */
+
 }
 
 // check if it's an external interrupt or software interrupt,
@@ -128,4 +106,3 @@ int request_irq(int irqn, irq_handler_t handler,
 
     return 0;
 }
-
