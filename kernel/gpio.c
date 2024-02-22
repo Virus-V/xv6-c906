@@ -12,6 +12,7 @@
 #include "file.h"
 
 extern struct spinlock devlock;
+extern pagetable_t kernel_pagetable;
 
 #define CVI_GPIOA_BASE		0x03020000
 #define CVI_GPIOB_BASE		0x03021000
@@ -59,7 +60,6 @@ gpiowrite(int user_src, uint64 src, int n)
   return 1;
 }
 
-extern pagetable_t kernel_pagetable;
 int
 gpioinit(void)
 {

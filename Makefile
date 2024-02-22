@@ -10,6 +10,7 @@ OBJS = \
   $K/hal_dw_i2c.o \
   $K/i2c.o \
   $K/gpio.o \
+  $K/pwm.o \
   $K/kalloc.o \
   $K/spinlock.o \
   $K/string.o \
@@ -139,6 +140,7 @@ UPROGS=\
 	$U/_wc\
 	$U/_zombie\
 	$U/_gpiotest\
+	$U/_pwmtest\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

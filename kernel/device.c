@@ -18,6 +18,10 @@ int gpioinit(void);
 int gpioread(int user_dst, uint64 dst, int n);
 int gpiowrite(int user_src, uint64 src, int n);
 
+int pwminit(void);
+int pwmread(int user_dst, uint64 dst, int n);
+int pwmwrite(int user_src, uint64 src, int n);
+
 void
 clockintr()
 {
@@ -36,6 +40,11 @@ devinit()
   if (gpioinit() == 0) {
     devsw[GPIO].read = gpioread;
     devsw[GPIO].write = gpiowrite;
+  }
+
+  if (pwminit() == 0) {
+    devsw[PWM].read = pwmread;
+    devsw[PWM].write = pwmwrite;
   }
 
   /* i2c init */
